@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="My Lists"/>
+<meta name="theme-color" content="#ffffff"/>
+<title>My Lists</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f5f5f3;
+    --bg3: #eeede9;
+    --text: #1a1a1a;
+    --text2: #666660;
+    --text3: #999994;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.2);
+    --border3: rgba(0,0,0,0.35);
+    --success-bg: #e1f5ee;
+    --success-text: #0f6e56;
+    --danger-bg: #fcebeb;
+    --danger-text: #a32d2d;
+    --urgent: #d85a30;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1e;
+      --bg2: #2c2c2e;
+      --bg3: #3a3a3c;
+      --text: #f2f2f7;
+      --text2: #aeaeb2;
+      --text3: #636366;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.2);
+      --border3: rgba(255,255,255,0.3);
+      --success-bg: #0d3d2a;
+      --success-text: #5dcaa5;
+      --danger-bg: #3d1010;
+      --danger-text: #f09595;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); }
+  body { padding-bottom: env(safe-area-inset-bottom); }
+  .app { max-width: 430px; margin: 0 auto; padding-bottom: 60px; }
+  .header { padding: 20px 16px 12px; display: flex; align-items: center; justify-content: space-between; }
+  .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .header p { font-size: 13px; color: var(--text2); margin-top: 2px; }
+  .header-left { flex: 1; }
+  .cat-strip { display: flex; gap: 8px; padding: 0 16px 14px; overflow-x: auto; scrollbar-width: none; }
+  .cat-strip::-webkit-scrollbar { display: none; }
+  .cat-pill { display: flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); font-size: 13px; color: var(--text2); cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: inherit; transition: all 0.15s; }
+  .cat-pill.active { border-color: var(--border3); color: var(--text); font-weight: 600; }
+  .cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .add-section { padding: 0 16px 14px; }
+  .add-row { display: flex; gap: 8px; }
+  .add-row input { flex: 1; padding: 11px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); font-size: 16px; color: var(--text); font-family: inherit; outline: none; }
+  .add-row input:focus { border-color: var(--border3); }
+  .icon-btn { width: 44px; height: 44px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; font-family: inherit; }
+  .icon-btn i { font-size: 20px; color: var(--text); }
+  .note-toggle { display: flex; align-items: center; gap: 4px; margin-top: 7px; background: none; border: none; cursor: pointer; font-size: 13px; color: var(--text2); font-family: inherit; padding: 2px 0; }
+  .note-toggle i.chev { font-size: 14px; transition: transform 0.2s; }
+  .note-toggle.open i.chev { transform: rotate(180deg); }
+  .note-expand { overflow: hidden; max-height: 0; transition: max-height 0.2s ease; }
+  .note-expand.open { max-height: 130px; }
+  .note-expand textarea { width: 100%; margin-top: 8px; padding: 10px 12px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); font-size: 14px; color: var(--text); font-family: inherit; resize: none; height: 80px; line-height: 1.5; outline: none; }
+  .hint-bar { margin: 0 16px 12px; padding: 9px 12px; border-radius: var(--radius); background: var(--bg2); font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 8px; }
+  .hint-bar i { font-size: 14px; flex-shrink: 0; }
+  .sec-label { padding: 4px 16px 8px; font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; }
+  .items-list { padding: 0 16px; display: flex; flex-direction: column; gap: 6px; }
+  .swipe-wrap { position: relative; border-radius: var(--radius-lg); overflow: hidden; }
+  .swipe-bg-l { position: absolute; inset: 0; display: flex; align-items: center; padding-left: 20px; background: var(--success-bg); }
+  .swipe-bg-l i { font-size: 22px; color: var(--success-text); }
+  .swipe-bg-r { position: absolute; inset: 0; display: flex; align-items: center; justify-content: flex-end; padding-right: 20px; background: var(--danger-bg); }
+  .swipe-bg-r i { font-size: 22px; color: var(--danger-text); }
+  .item-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; position: relative; touch-action: pan-y; user-select: none; }
+  .item-card.dragging { opacity: 0.5; border-style: dashed; }
+  .item-card.drag-over { border-color: var(--border3); }
+  .item-main { display: flex; align-items: flex-start; gap: 10px; padding: 13px 14px; }
+  .item-card.done .item-main { opacity: 0.4; }
+  .drag-handle { width: 20px; display: flex; align-items: center; justify-content: center; cursor: grab; flex-shrink: 0; margin-top: 2px; touch-action: none; }
+  .drag-handle i { font-size: 16px; color: var(--text3); }
+  .check-circle { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--border2); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--bg); margin-top: 1px; transition: all 0.15s; }
+  .check-circle.checked { border-color: transparent; }
+  .check-circle.checked i { font-size: 14px; }
+  .item-body { flex: 1; min-width: 0; }
+  .item-text { font-size: 16px; color: var(--text); line-height: 1.4; word-break: break-word; }
+  .item-card.done .item-text { text-decoration: line-through; color: var(--text3); }
+  .item-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .item-note-prev { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; display: flex; align-items: center; gap: 3px; }
+  .item-note-prev i { font-size: 12px; }
+  .item-expires { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 3px; }
+  .item-expires i { font-size: 11px; }
+  .item-right { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+  .priority-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: var(--radius); border: none; background: none; }
+  .priority-btn i { font-size: 17px; color: var(--text3); }
+  .priority-btn.urgent i { color: var(--urgent); }
+  .item-badge { font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: 500; flex-shrink: 0; }
+  .act-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: var(--radius); border: none; background: none; opacity: 0; transition: opacity 0.15s; }
+  .item-card:hover .act-btn { opacity: 1; }
+  .act-btn i { font-size: 16px; color: var(--text2); }
+  .item-detail { border-top: 1px solid var(--border); padding: 10px 14px 12px; background: var(--bg2); display: none; }
+  .item-detail.open { display: block; }
+  .item-detail textarea { width: 100%; padding: 9px 10px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); font-size: 14px; color: var(--text); font-family: inherit; resize: none; min-height: 72px; line-height: 1.5; outline: none; }
+  .detail-save { margin-top: 7px; padding: 6px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); font-size: 13px; color: var(--text2); cursor: pointer; font-family: inherit; }
+  .empty-state { padding: 40px 16px; text-align: center; color: var(--text3); font-size: 15px; }
+  .manage-btn { margin: 20px 16px 0; padding: 11px; width: calc(100% - 32px); border-radius: var(--radius); border: 1px dashed var(--border2); background: transparent; font-size: 13px; color: var(--text2); cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; justify-content: center; z-index: 100; }
+  .modal { background: var(--bg); border-radius: var(--radius-lg) var(--radius-lg) 0 0; width: 100%; max-width: 430px; padding: 20px 16px calc(32px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; }
+  .modal h2 { font-size: 17px; font-weight: 600; margin-bottom: 16px; }
+  .modal-close { float: right; background: none; border: none; cursor: pointer; font-size: 14px; color: var(--text2); font-family: inherit; }
+  .modal-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .modal-row input { flex: 1; padding: 9px 10px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); font-size: 14px; color: var(--text); font-family: inherit; outline: none; }
+  .color-pick { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .color-swatch { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2.5px solid transparent; transition: transform 0.1s; }
+  .color-swatch.sel { border-color: var(--text); transform: scale(1.15); }
+  .modal-add-btn { padding: 9px 16px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); font-size: 14px; color: var(--text); cursor: pointer; font-family: inherit; }
+  .cat-list { display: flex; flex-direction: column; margin-top: 12px; }
+  .cat-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .cat-row:last-child { border-bottom: none; }
+  .cat-row-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .cat-row-name { flex: 1; font-size: 14px; }
+  .cat-row-count { font-size: 12px; color: var(--text3); }
+  .cat-row-del { background: none; border: none; cursor: pointer; color: var(--text3); padding: 4px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-left">
+      <h1>My Lists</h1>
+      <p id="header-sub">All items</p>
+    </div>
+  </div>
+  <div class="cat-strip" id="cat-strip"></div>
+  <div class="hint-bar"><i class="ti ti-hand-finger"></i> Swipe right to complete · swipe left to delete · drag <i class="ti ti-grip-vertical" style="font-size:13px"></i> to reorder</div>
+  <div class="add-section">
+    <div class="add-row">
+      <input type="text" id="new-item" placeholder="Add a new item…" autocomplete="off"/>
+      <button class="icon-btn" onclick="toggleNote()" aria-label="Add note"><i class="ti ti-notes"></i></button>
+      <button class="icon-btn" onclick="addItem()" aria-label="Add item"><i class="ti ti-plus"></i></button>
+    </div>
+    <button class="note-toggle" id="note-lbl" onclick="toggleNote()">
+      <i class="ti ti-chevron-down chev"></i><span>Add a note</span>
+    </button>
+    <div class="note-expand" id="note-expand">
+      <textarea id="new-note" placeholder="Optional note…"></textarea>
+    </div>
+  </div>
+  <div class="sec-label" id="lbl-active">Active</div>
+  <div class="items-list" id="active-list"></div>
+  <div class="sec-label" id="lbl-done" style="margin-top:14px;display:none;">Done — clears after 24 hours</div>
+  <div class="items-list" id="done-list"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">No items yet — add one above</div>
+  <button class="manage-btn" onclick="openModal()"><i class="ti ti-settings"></i> Manage categories</button>
+</div>
+
+<script>
+const COLORS=['#1D9E75','#378ADD','#D85A30','#D4537E','#7F77DD','#BA7517','#639922','#888780'];
+const CL=['#E1F5EE','#E6F1FB','#FAECE7','#FBEAF0','#EEEDFE','#FAEEDA','#EAF3DE','#F1EFE8'];
+const CD=['#0F6E56','#185FA5','#993C1D','#993556','#534AB7','#854F0B','#3B6D11','#5F5E5A'];
+const TTL=24*60*60*1000;
+const KEY='mylists-v1';
+
+let cats=[
+  {id:'all',name:'All',color:'#888780',light:'#F1EFE8',dark:'#5F5E5A'},
+  {id:'personal',name:'Personal',color:'#378ADD',light:'#E6F1FB',dark:'#185FA5'},
+  {id:'work',name:'Work',color:'#1D9E75',light:'#E1F5EE',dark:'#0F6E56'},
+  {id:'travel',name:'Travel',color:'#D85A30',light:'#FAECE7',dark:'#993C1D'},
+  {id:'health',name:'Health',color:'#D4537E',light:'#FBEAF0',dark:'#993556'},
+];
+let items=[];
+let activeCat='all',selColor=0,nextId=1,noteOpen=false;
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify({cats,items,nextId}));}catch(e){}}
+function load(){
+  try{
+    const d=JSON.parse(localStorage.getItem(KEY)||'{}');
+    if(d.cats)cats=d.cats;
+    if(d.items)items=d.items;
+    if(d.nextId)nextId=d.nextId;
+  }catch(e){}
+  purge();render();
+}
+
+function purge(){const n=Date.now();const b=items.length;items=items.filter(i=>!(i.done&&i.doneAt&&(n-i.doneAt)>=TTL));if(items.length!==b)save();}
+function timeLeft(t){const ms=TTL-(Date.now()-t);if(ms<=0)return null;const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);return h>0?`Clears in ${h}h ${m}m`:`Clears in ${m}m`;}
+function getCat(id){return cats.find(c=>c.id===id)||cats[0];}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function toggleNote(){
+  noteOpen=!noteOpen;
+  document.getElementById('note-expand').classList.toggle('open',noteOpen);
+  const l=document.getElementById('note-lbl');l.classList.toggle('open',noteOpen);
+  l.querySelector('span').textContent=noteOpen?'Hide note':'Add a note';
+  if(noteOpen)document.getElementById('new-note').focus();
+}
+
+function render(){
+  purge();
+  const strip=document.getElementById('cat-strip');strip.innerHTML='';
+  cats.forEach(c=>{
+    const cnt=c.id==='all'?items.filter(i=>!i.done).length:items.filter(i=>i.cat===c.id&&!i.done).length;
+    const el=document.createElement('button');el.className='cat-pill'+(activeCat===c.id?' active':'');
+    el.innerHTML=`<span class="cat-dot" style="background:${c.color}"></span>${esc(c.name)}${cnt>0?` <span style="font-size:12px;opacity:0.6">${cnt}</span>`:''}`;
+    el.onclick=()=>{activeCat=c.id;render();};strip.appendChild(el);
+  });
+  const vis=activeCat==='all'?[...items]:items.filter(i=>i.cat===activeCat);
+  const active=vis.filter(i=>!i.done).sort((a,b)=>{if(a.urgent!==b.urgent)return a.urgent?-1:1;return(a.order||0)-(b.order||0);});
+  const done=vis.filter(i=>i.done);
+  const co=getCat(activeCat);
+  document.getElementById('header-sub').textContent=activeCat==='all'?`${items.filter(i=>!i.done).length} remaining`:`${active.length} remaining in ${co.name}`;
+  const al=document.getElementById('active-list'),dl=document.getElementById('done-list');
+  al.innerHTML='';dl.innerHTML='';
+  active.forEach(item=>al.appendChild(makeWrap(item)));
+  done.forEach(item=>dl.appendChild(makeWrap(item)));
+  document.getElementById('lbl-done').style.display=done.length?'':'none';
+  document.getElementById('empty-state').style.display=(!active.length&&!done.length)?'':'none';
+  document.getElementById('lbl-active').style.display=(active.length||done.length)?'':'none';
+  bindSwipe();bindDrag();
+}
+
+function makeWrap(item){
+  const w=document.createElement('div');w.className='swipe-wrap';w.dataset.id=item.id;
+  w.innerHTML=`<div class="swipe-bg-l"><i class="ti ti-check"></i></div><div class="swipe-bg-r"><i class="ti ti-trash"></i></div>`;
+  w.appendChild(makeCard(item));return w;
+}
+
+function makeCard(item){
+  const cat=getCat(item.cat);
+  const div=document.createElement('div');div.className='item-card'+(item.done?' done':'');div.dataset.id=item.id;
+  const hasNote=item.note&&item.note.trim();
+  const expiry=item.done&&item.doneAt?timeLeft(item.doneAt):null;
+  div.innerHTML=`
+    <div class="item-main">
+      ${!item.done?`<div class="drag-handle" draggable="true" data-id="${item.id}"><i class="ti ti-grip-vertical"></i></div>`:''}
+      <div class="check-circle ${item.done?'checked':''}" onclick="toggleItem(${item.id})" style="${item.done?`background:${cat.color}`:''}">
+        ${item.done?`<i class="ti ti-check" style="color:white"></i>`:''}
+      </div>
+      <div class="item-body">
+        <div class="item-text">${esc(item.text)}</div>
+        <div class="item-meta">
+          ${hasNote?`<span class="item-note-prev"><i class="ti ti-notes"></i>${esc(item.note.length>40?item.note.slice(0,40)+'…':item.note)}</span>`:''}
+          ${expiry?`<span class="item-expires"><i class="ti ti-clock"></i>${expiry}</span>`:''}
+        </div>
+      </div>
+      <div class="item-right">
+        ${!item.done?`<button class="priority-btn${item.urgent?' urgent':''}" onclick="toggleUrgent(${item.id})" aria-label="Toggle urgent"><i class="ti ti-flag"></i></button>`:''}
+        ${activeCat==='all'?`<span class="item-badge" style="background:${cat.light};color:${cat.dark}">${esc(cat.name)}</span>`:''}
+        <button class="act-btn" onclick="toggleDetail(${item.id})" aria-label="Note"><i class="ti ti-notes"></i></button>
+        <button class="act-btn" onclick="deleteItem(${item.id})" aria-label="Delete"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+    <div class="item-detail" id="detail-${item.id}">
+      <textarea id="note-${item.id}" placeholder="Add a note…">${esc(item.note||'')}</textarea>
+      <button class="detail-save" onclick="saveNote(${item.id})">Save note</button>
+    </div>`;
+  return div;
+}
+
+function toggleUrgent(id){const i=items.find(x=>x.id===id);if(i){i.urgent=!i.urgent;save();render();}}
+function toggleDetail(id){const el=document.getElementById('detail-'+id);const o=el.classList.contains('open');document.querySelectorAll('.item-detail.open').forEach(d=>d.classList.remove('open'));if(!o){el.classList.add('open');el.querySelector('textarea').focus();}}
+function saveNote(id){const i=items.find(x=>x.id===id);if(i){i.note=document.getElementById('note-'+id).value;save();render();}}
+function toggleItem(id){const i=items.find(x=>x.id===id);if(i){i.done=!i.done;i.doneAt=i.done?Date.now():null;save();render();}}
+function deleteItem(id){items=items.filter(x=>x.id!==id);save();render();}
+
+function addItem(){
+  const inp=document.getElementById('new-item'),ni=document.getElementById('new-note');
+  const text=inp.value.trim();if(!text)return;
+  const cat=activeCat==='all'?(cats[1]?cats[1].id:'personal'):activeCat;
+  const maxO=items.filter(i=>!i.done).reduce((m,i)=>Math.max(m,i.order||0),0);
+  items.unshift({id:nextId++,text,note:ni.value.trim(),cat,done:false,doneAt:null,urgent:false,order:maxO+1});
+  inp.value='';ni.value='';if(noteOpen)toggleNote();save();render();
+}
+document.getElementById('new-item').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey)addItem();});
+
+function bindSwipe(){
+  document.querySelectorAll('.swipe-wrap').forEach(wrap=>{
+    const card=wrap.querySelector('.item-card');
+    let sx=0,sy=0,dx=0,axis=null,swiping=false;
+    card.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;axis=null;swiping=false;},{passive:true});
+    card.addEventListener('touchmove',e=>{
+      const cx=e.touches[0].clientX,cy=e.touches[0].clientY;
+      if(!axis){const ax=Math.abs(cx-sx),ay=Math.abs(cy-sy);if(ax<5&&ay<5)return;axis=ax>ay?'x':'y';}
+      if(axis!=='x')return;
+      dx=cx-sx;swiping=true;card.style.transition='none';card.style.transform=`translateX(${dx}px)`;
+    },{passive:true});
+    card.addEventListener('touchend',()=>{
+      if(!swiping){card.style.transform='';return;}
+      const id=parseInt(wrap.dataset.id);
+      if(dx>80){card.style.transition='transform 0.2s';card.style.transform='translateX(110%)';setTimeout(()=>toggleItem(id),190);}
+      else if(dx<-80){card.style.transition='transform 0.2s';card.style.transform='translateX(-110%)';setTimeout(()=>deleteItem(id),190);}
+      else{card.style.transition='transform 0.25s';card.style.transform='';}
+    });
+  });
+}
+
+function bindDrag(){
+  let dragId=null,overEl=null;
+  document.querySelectorAll('[draggable=true]').forEach(handle=>{
+    const card=handle.closest('.item-card');
+    handle.addEventListener('dragstart',e=>{dragId=parseInt(handle.dataset.id);card.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+    handle.addEventListener('dragend',()=>{dragId=null;document.querySelectorAll('.item-card').forEach(c=>c.classList.remove('dragging','drag-over'));});
+  });
+  document.querySelectorAll('#active-list .item-card').forEach(card=>{
+    card.addEventListener('dragover',e=>{e.preventDefault();if(overEl!==card){if(overEl)overEl.classList.remove('drag-over');overEl=card;card.classList.add('drag-over');}});
+    card.addEventListener('dragleave',()=>{card.classList.remove('drag-over');if(overEl===card)overEl=null;});
+    card.addEventListener('drop',e=>{
+      e.preventDefault();card.classList.remove('drag-over');overEl=null;
+      const tid=parseInt(card.dataset.id);if(!dragId||dragId===tid)return;
+      const si=items.findIndex(x=>x.id===dragId),ti=items.findIndex(x=>x.id===tid);
+      if(si<0||ti<0)return;
+      const[m]=items.splice(si,1);items.splice(ti,0,m);
+      items.filter(i=>!i.done).forEach((i,idx)=>{i.order=idx;});
+      save();render();
+    });
+  });
+}
+
+function openModal(){
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='modal';
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">Close</button>
+    <h2>Manage categories</h2>
+    <div class="modal-row"><input type="text" id="nc-name" placeholder="Category name…" maxlength="20"/></div>
+    <div class="color-pick" id="color-pick"></div>
+    <button class="modal-add-btn" onclick="addCat()">Add category</button>
+    <div class="cat-list" id="cat-list"></div>
+  </div>`;
+  ov.onclick=closeModal;document.body.appendChild(ov);rMC();rCL();
+}
+function closeModal(){const m=document.getElementById('modal');if(m)m.remove();}
+function rMC(){const cp=document.getElementById('color-pick');if(!cp)return;cp.innerHTML='';COLORS.forEach((c,i)=>{const s=document.createElement('div');s.className='color-swatch'+(selColor===i?' sel':'');s.style.background=c;s.onclick=()=>{selColor=i;rMC();};cp.appendChild(s);});}
+function rCL(){const cl=document.getElementById('cat-list');if(!cl)return;cl.innerHTML='';cats.filter(c=>c.id!=='all').forEach(c=>{const cnt=items.filter(i=>i.cat===c.id).length;const r=document.createElement('div');r.className='cat-row';r.innerHTML=`<div class="cat-row-dot" style="background:${c.color}"></div><span class="cat-row-name">${esc(c.name)}</span><span class="cat-row-count">${cnt} item${cnt!==1?'s':''}</span><button class="cat-row-del" onclick="delCat('${c.id}')"><i class="ti ti-trash" style="font-size:16px"></i></button>`;cl.appendChild(r);});}
+function addCat(){const inp=document.getElementById('nc-name');const name=inp.value.trim();if(!name)return;const id=name.toLowerCase().replace(/\s+/g,'-')+'-'+Date.now();cats.push({id,name,color:COLORS[selColor],light:CL[selColor],dark:CD[selColor]});inp.value='';save();render();rCL();}
+function delCat(id){cats=cats.filter(c=>c.id!==id);items=items.filter(i=>i.cat!==id);if(activeCat===id)activeCat='all';save();render();rCL();}
+
+setInterval(()=>{purge();render();},60000);
+load();
+</script>
+</body>
+</html>
