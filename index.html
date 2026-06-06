@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<meta name="apple-mobile-web-app-title" content="My Lists"/>
+<meta name="apple-mobile-web-app-title" content="To-Do"/>
 <meta name="theme-color" content="#ffffff"/>
-<title>My Lists</title>
+<title>To-Do</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHJ4PSI0NCIgZmlsbD0iIzM3OEFERCIvPjxyZWN0IHg9IjQyIiB5PSI1OCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjExIiByeD0iNS41IiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC45NSIvPjxyZWN0IHg9IjQyIiB5PSI4NiIgd2lkdGg9IjY1IiBoZWlnaHQ9IjExIiByeD0iNS41IiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC45NSIvPjxyZWN0IHg9IjQyIiB5PSIxMTQiIHdpZHRoPSI1MCIgaGVpZ2h0PSIxMSIgcng9IjUuNSIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuNiIvPjxjaXJjbGUgY3g9IjE0MiIgY3k9IjExOS41IiByPSIyMiIgZmlsbD0iIzE4NUZBNSIvPjxwb2x5bGluZSBwb2ludHM9IjEzMywxMTkgMTM5LDEyNiAxNTIsMTEyIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+"/>
 <style>
   :root {
     --bg: #ffffff;
@@ -25,6 +26,7 @@
     --danger-bg: #fcebeb;
     --danger-text: #a32d2d;
     --urgent: #d85a30;
+    --accent: #378ADD;
     --radius: 8px;
     --radius-lg: 12px;
   }
@@ -49,10 +51,11 @@
   html, body { height: 100%; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); }
   body { padding-bottom: env(safe-area-inset-bottom); }
   .app { max-width: 430px; margin: 0 auto; padding-bottom: 60px; }
-  .header { padding: 20px 16px 12px; display: flex; align-items: center; justify-content: space-between; }
+  .header { padding: 20px 16px 12px; display: flex; align-items: center; gap: 12px; }
+  .header-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; }
+  .header-left { flex: 1; }
   .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
   .header p { font-size: 13px; color: var(--text2); margin-top: 2px; }
-  .header-left { flex: 1; }
   .cat-strip { display: flex; gap: 8px; padding: 0 16px 14px; overflow-x: auto; scrollbar-width: none; }
   .cat-strip::-webkit-scrollbar { display: none; }
   .cat-pill { display: flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); font-size: 13px; color: var(--text2); cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: inherit; transition: all 0.15s; }
@@ -61,7 +64,7 @@
   .add-section { padding: 0 16px 14px; }
   .add-row { display: flex; gap: 8px; }
   .add-row input { flex: 1; padding: 11px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); font-size: 16px; color: var(--text); font-family: inherit; outline: none; }
-  .add-row input:focus { border-color: var(--border3); }
+  .add-row input:focus { border-color: var(--accent); }
   .icon-btn { width: 44px; height: 44px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; font-family: inherit; }
   .icon-btn i { font-size: 20px; color: var(--text); }
   .note-toggle { display: flex; align-items: center; gap: 4px; margin-top: 7px; background: none; border: none; cursor: pointer; font-size: 13px; color: var(--text2); font-family: inherit; padding: 2px 0; }
@@ -81,7 +84,7 @@
   .swipe-bg-r i { font-size: 22px; color: var(--danger-text); }
   .item-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; position: relative; touch-action: pan-y; user-select: none; }
   .item-card.dragging { opacity: 0.5; border-style: dashed; }
-  .item-card.drag-over { border-color: var(--border3); }
+  .item-card.drag-over { border-color: var(--accent); }
   .item-main { display: flex; align-items: flex-start; gap: 10px; padding: 13px 14px; }
   .item-card.done .item-main { opacity: 0.4; }
   .drag-handle { width: 20px; display: flex; align-items: center; justify-content: center; cursor: grab; flex-shrink: 0; margin-top: 2px; touch-action: none; }
@@ -133,8 +136,16 @@
 <body>
 <div class="app">
   <div class="header">
+    <svg class="header-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <rect width="200" height="200" rx="44" fill="#378ADD"/>
+      <rect x="42" y="58" width="80" height="11" rx="5.5" fill="white" opacity="0.95"/>
+      <rect x="42" y="86" width="65" height="11" rx="5.5" fill="white" opacity="0.95"/>
+      <rect x="42" y="114" width="50" height="11" rx="5.5" fill="white" opacity="0.6"/>
+      <circle cx="142" cy="119.5" r="22" fill="#185FA5"/>
+      <polyline points="133,119 139,126 152,112" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
     <div class="header-left">
-      <h1>My Lists</h1>
+      <h1>To-Do</h1>
       <p id="header-sub">All items</p>
     </div>
   </div>
@@ -166,7 +177,7 @@ const COLORS=['#1D9E75','#378ADD','#D85A30','#D4537E','#7F77DD','#BA7517','#6399
 const CL=['#E1F5EE','#E6F1FB','#FAECE7','#FBEAF0','#EEEDFE','#FAEEDA','#EAF3DE','#F1EFE8'];
 const CD=['#0F6E56','#185FA5','#993C1D','#993556','#534AB7','#854F0B','#3B6D11','#5F5E5A'];
 const TTL=24*60*60*1000;
-const KEY='mylists-v1';
+const KEY='todo-v1';
 
 let cats=[
   {id:'all',name:'All',color:'#888780',light:'#F1EFE8',dark:'#5F5E5A'},
@@ -240,7 +251,7 @@ function makeCard(item){
   div.innerHTML=`
     <div class="item-main">
       ${!item.done?`<div class="drag-handle" draggable="true" data-id="${item.id}"><i class="ti ti-grip-vertical"></i></div>`:''}
-      <div class="check-circle ${item.done?'checked':''}" onclick="toggleItem(${item.id})" style="${item.done?`background:${cat.color}`:''}">
+      <div class="check-circle ${item.done?'checked':''}" onclick="toggleItem(${item.id})" style="${item.done?`background:#378ADD`:''}">
         ${item.done?`<i class="ti ti-check" style="color:white"></i>`:''}
       </div>
       <div class="item-body">
